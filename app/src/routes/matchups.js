@@ -1,6 +1,45 @@
 var express = require('express');
 var router = express.Router();
 
+// GET for showing the Edit Form
+router.get('/:playerSlug/edit/:matchupId', function(req, res) {
+    const { playerSlug, matchupId } = req.params;
+
+    // STUB
+    const existingNote = {
+        id: matchupId,
+        matchupDate: '2026-03-10',
+        opponent: 'Stephen Curry',
+        points: 28,
+        assists: 8,
+        rebounds: 4,
+        notes: 'Curry is too small and no match for lebron'
+    };
+
+    res.render('matchup-notes-edit', {
+        title: 'Edit Matchup Note - NBA Player Matchup Notes',
+        playerSlug: playerSlug,
+        note: existingNote
+    });
+});
+
+// POST save Changes
+router.post('/:playerSlug/edit/:matchupId', function(req, res) {
+    const { playerSlug, matchupId } = req.params;
+    // Logic to update the database would go here
+    res.redirect(`/matchups/${playerSlug}`);
+});
+
+// POST delete Note
+router.post('/:playerSlug/delete/:matchupId', function(req, res) {
+    const { playerSlug, matchupId } = req.params;
+    // Logic to remove the note would go here
+    res.redirect(`/matchups/${playerSlug}`);
+});
+
+
+
+
 // GET add player page
 router.get('/:playerSlug/add', (req, res) => {
 	const slugFromUrl = req.params.playerSlug;
