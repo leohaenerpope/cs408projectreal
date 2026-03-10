@@ -1,13 +1,38 @@
+<style>
+  body {
+    /* Replace the URL with your image path (e.g., /images/court.jpg) */
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                url('/images/home.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+</style>
+
 <div class="container py-5">
   <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <div class="text-center mb-5">
-        <h1 class="display-4 text-white mb-3"><%= title %></h1>
-        <p class="text-white-50">GitHub Repository: <a href="https://github.com/shanep/fullstack-starter">https://github.com/shanep/fullstack-starter</a></p>
-        <img src="/images/dependency_2x.png" alt="Fullstack Dependency" class="img-fluid my-4" style="max-width: 200px;">
-        <ul class="list-unstyled text-white-50 mb-4">
-          <li><a href="/lab0.html" class="btn btn-secondary mt-3">Go to Lab 0 Page</a></li>
-        </ul>
+    <div class="col-lg-8">
+      <div class="card bg-dark text-white shadow-lg border-primary">
+        <div class="card-body text-center p-5">
+          
+          <h1 class="display-5 mb-3">
+            Welcome to NBA Player Matchup Notes!
+          </h1>
+          
+          <p class="lead text-light mb-4">
+            Create matchup notes to learn about how your favorite NBA players perform against others.
+          </p>
+
+          <hr class="border-secondary mb-4">
+
+          <div class="mt-4">
+            <a href="/matchups" class="btn btn-primary btn-lg px-5">
+              Get Started
+            </a>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
