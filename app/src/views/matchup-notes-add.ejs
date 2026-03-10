@@ -1,0 +1,41 @@
+<div class="container py-5">
+    <h2 class="text-white mb-4">Add Matchup Note for <%= playerName %></h2>
+    
+    <div class="card bg-dark text-white p-4">
+      <form action="/matchups/<%= playerSlug %>/add" method="POST">
+        
+        <div class="mb-3">
+          <label class="form-label">Opponent Name</label>
+          <input type="text" name="opponent" class="form-control bg-secondary text-white border-0" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-white fw-bold">Matchup Date</label>
+            <input type="date" name="matchupDate" class="form-control bg-secondary text-white border-0" required>
+          </div>
+  
+        <div class="row mb-3">
+          <div class="col">
+            <label class="form-label">Points</label>
+            <input type="number" name="points" class="form-control bg-secondary text-white border-0">
+          </div>
+          <div class="col">
+            <label class="form-label">Assists</label>
+            <input type="number" name="assists" class="form-control bg-secondary text-white border-0">
+          </div>
+          <div class="col">
+            <label class="form-label">Rebounds</label>
+            <input type="number" name="rebounds" class="form-control bg-secondary text-white border-0">
+          </div>
+        </div>
+  
+        <div class="mb-3">
+          <label class="form-label">Matchup Notes</label>
+          <textarea name="notes" class="form-control bg-secondary text-white border-0" rows="3"></textarea>
+        </div>
+  
+        <button type="submit" class="btn btn-success">Create Matchup Note</button>
+        <a href="/matchups/<%= playerSlug %>" class="btn btn-outline-light">Cancel</a>
+      </form>
+    </div>
+  </div>

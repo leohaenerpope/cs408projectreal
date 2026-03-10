@@ -6,6 +6,7 @@ const fs = require('fs');
 
 const index = require('./routes/index');
 const players = require('./routes/players')
+const matchups = require('./routes/matchups')
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use((request, response, next) => {
 });
 app.use('/', index);
 app.use('/players', players)
+app.use('/matchups', matchups)
 
 
 module.exports = app;

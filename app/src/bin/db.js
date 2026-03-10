@@ -7,6 +7,8 @@ const createTodosTableSQL = `
     completed INTEGER DEFAULT 0
   )`;
 
+  // USER CANNOT ADD PLAYER NAMED EVERYONE
+
 
 function createDatabaseManager(dbPath) {
   const database = new Database(dbPath);
