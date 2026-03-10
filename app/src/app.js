@@ -5,6 +5,7 @@ const db = require('./bin/db');
 const fs = require('fs');
 
 const index = require('./routes/index');
+const players = require('./routes/players')
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use((request, response, next) => {
   next();
 });
 app.use('/', index);
+app.use('/players', players)
 
 
 module.exports = app;
