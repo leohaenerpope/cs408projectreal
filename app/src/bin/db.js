@@ -7,7 +7,7 @@ const createTodosTableSQL = `
     completed INTEGER DEFAULT 0
   )`;
 const createPlayersTableSQL = `
-  CREATE TABLE IF NOT EXISTS todos (
+  CREATE TABLE IF NOT EXISTS players (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -19,9 +19,9 @@ const createMatchupNotesTableSQL = `
     opponent_id INTEGER NOT NULL,
     notes TEXT,
     matchup_date TEXT,
-    points INTEGER DEFAULT 0,
-    assists INTEGER DEFAULT 0,
-    rebounds INTEGER DEFAULT 0,
+    points INTEGER,
+    assists INTEGER,
+    rebounds INTEGER,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`;
 
@@ -48,6 +48,8 @@ function createDatabaseManager(dbPath) {
         if (process.env.NODE_ENV === 'test') {
           ensureConnected();
           database.prepare('DELETE FROM todos').run();
+          database.prepare('DELETE FROM players').run();
+          database.prepare('DELETE FROM matchup_notes').run();
         } else {
           console.warn('clearDatabase called outside of test environment. FIXME!');
         }
@@ -78,10 +80,85 @@ function createDatabaseManager(dbPath) {
         return database.prepare('SELECT * FROM players ORDER BY id DESC').all();
       },
 
-      createPlayer: (name) => {
-        const info = database.prepare('INSERT INTO players (name) VALUES (?)').run(task);
-        return info.lastInsertRowid; // todo
+      getPlayerById: (id) => {
+        return database.prepare('SELECT * FROM players WHERE id = ?').get(id);
       },
+
+      createPlayer: (name) => {
+        if (name.toLowerCase() === 'everyone') {
+          throw new Error('You cannot add a player named: everyone')
+        }
+        const stmt = database.prepare('INSERT INTO players (name) VALUES (?)')
+        const info = stmt.run(name);
+        return database.prepare('SELECT * FROM players WHERE id = ?').get(info.lastInsertRowid);
+      },
+
+      // no update player functionality for project
+      // may add layer just for updating name, however not necessary right now
+
+      deletePlayer: (id) => {
+        const info = database.prepare('DELETE FROM players WHERE id = ?').run(id);
+        return info.changes;
+      },
+
+      getTotalPlayers: () => {
+        return database.prepare('SELECT COUNT(*) AS c FROM players').get().c;
+      },
+
+      // Player Matchup Notes ------------------------------
+
+      getAllPlayerMatchupNotes: (playerId) => {
+        const sql = `
+        SELECT m.*, p.name, AS opponent_name
+        FROM matchup_notes m
+        JOIN players p ON m.opponent_id = p.id
+        WHERE m.player_id = ?
+        ORDER BY m.matchup_date DESC
+        `;
+        return database.prepare(sql).all(playerId);
+      },
+
+      createMatchupNote: (note) => {
+        const {playerId, opponentId, notes, matchup_date, points, assists, rebounds} = note;
+        const sql = `
+        INSERT INTO matchup_notes
+        (player_id, opponent_id, notes, matchup_date, points, assists, rebounds)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        const info = database.prepare(sql).run(
+          playerId, opponentId, notes, matchup_date, points, assists, rebounds
+        );
+        return info.lastInsertRowid;
+      },
+
+      updateMatchupNote: (id, note) => {
+        const existing = database.prepare('SELECT * FROM matchup_notes WHERE id = ?').get(id);
+        if (!existing) return 0;
+
+        const realData = {...existing, ...note}
+
+        const info = database.prepare(
+          'UPDATE matchup_notes SET notes = ?, matchup_date = ?, points = ?, assists = ?, rebounds = ? WHERE id = ?'
+        ).run(
+          realData.notes,
+          realData.matchup_date,
+          realData.points,
+          realData.assists,
+          realData.rebounds,
+          id);
+        return info.changes
+      },
+
+      deleteMatchupNote: (id) => {
+        const info = database.prepare('DELETE FROM matchup_notes WHERE id = ?').run(id);
+        return info.changes;
+      },
+
+
+
+
+
+
 
       getAllTodos: () => {
         return database.prepare('SELECT * FROM todos ORDER BY id DESC').all();
