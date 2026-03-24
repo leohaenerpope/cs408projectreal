@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // This is for static files that are not using a template engine
 app.use(express.static(path.join(__dirname, 'static')));
 
-// Middleware to attach database to request
+// Middleware to attach database to request - database connection established
 app.use((request, response, next) => {
   request.db = databaseManager.dbHelpers;
   next();

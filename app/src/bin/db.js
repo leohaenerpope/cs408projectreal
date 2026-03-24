@@ -1,17 +1,12 @@
 const Database = require('better-sqlite3');
 
-const createTodosTableSQL = `
-  CREATE TABLE IF NOT EXISTS todos (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    task TEXT NOT NULL,
-    completed INTEGER DEFAULT 0
-  )`;
 const createPlayersTableSQL = `
   CREATE TABLE IF NOT EXISTS players (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`;
+
 const createMatchupNotesTableSQL = `
   CREATE TABLE IF NOT EXISTS matchup_notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,7 +27,6 @@ function createDatabaseManager(dbPath) {
   const database = new Database(dbPath);
   console.log('Database manager created for:', dbPath);
   database.pragma('foreign_keys = ON');
-  database.exec(createTodosTableSQL);
   database.exec(createPlayersTableSQL);
   database.exec(createMatchupNotesTableSQL);
 
@@ -41,8 +35,7 @@ function createDatabaseManager(dbPath) {
       throw new Error('Database connection is not open');
     }
   }
-  return {
-    dbHelpers: {
+  const dbHelpers = {
 
       clearDatabase: () => {
         if (process.env.NODE_ENV === 'test') {
@@ -75,6 +68,28 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      // Simple sample seed function, will not be used in the feature, just for checkpoint 2
+      // to ensure the database works. 
+      seedDatabaseSample: () => {
+        ensureConnected();
+
+        const lebron = dbHelpers.createPlayer('LeBron James');
+        const curry = dbHelpers.createPlayer('Stephen Curry');
+
+        dbHelpers.createMatchupNote({
+          playerId: lebron.id,
+          opponentId: curry.id,
+          notes: 'Tough defensive matchup',
+          matchup_date: '2024-01-01',
+          points: 28,
+          assists: 8,
+          rebounds: 7
+        });
+
+        console.log('Database fully seeded using helpers');
+      },
+
+      // Players -----------------------
 
       getAllPlayers: () => {
         return database.prepare('SELECT * FROM players ORDER BY id DESC').all();
@@ -82,6 +97,10 @@ function createDatabaseManager(dbPath) {
 
       getPlayerById: (id) => {
         return database.prepare('SELECT * FROM players WHERE id = ?').get(id);
+      },
+
+      getPlayerByName: (name) => {
+        return database.prepare('SELECT * FROM players WHERE LOWER(name) = LOWER(?)').get(name);
       },
 
       createPlayer: (name) => {
@@ -153,49 +172,14 @@ function createDatabaseManager(dbPath) {
         const info = database.prepare('DELETE FROM matchup_notes WHERE id = ?').run(id);
         return info.changes;
       },
+  };
 
+  // TODO: THIS WILL BE CHANGED FOR CHECKPOINT 3 TO ADD FULL USER ABILITY TO ADD/REMOVE
+  // THINGS FROM A DATABASE THAT THEY WILL MAKE THEMSELVES, NOT JUST A SAMPLE DATABASE
+  dbHelpers.seedDatabaseSample();
 
-
-
-
-
-
-      getAllTodos: () => {
-        return database.prepare('SELECT * FROM todos ORDER BY id DESC').all();
-      },
-
-      getTodoById: (id) => {
-        return database.prepare('SELECT * FROM todos WHERE id = ?').get(id);
-      },
-
-      createTodo: (task) => {
-        const info = database.prepare('INSERT INTO todos (task) VALUES (?)').run(task);
-        return info.lastInsertRowid;
-      },
-
-      updateTodo: (id, task, completed) => {
-        const info = database.prepare('UPDATE todos SET task = ?, completed = ? WHERE id = ?')
-          .run(task, completed ? 1 : 0, id);
-        return info.changes;
-      },
-
-      deleteTodo: (id) => {
-        const info = database.prepare('DELETE FROM todos WHERE id = ?').run(id);
-        return info.changes;
-      },
-
-      toggleTodo: (id) => {
-        const info = database.prepare('UPDATE todos SET completed = NOT completed WHERE id = ?').run(id);
-        return info.changes;
-      },
-      getTotalTodos: () => {
-        return database.prepare('SELECT COUNT(*) AS c FROM todos').get().c;
-      },
-
-      getCompletedTodos: () => {
-        return database.prepare('SELECT COUNT(*) AS c FROM todos WHERE completed > 0').get().c;
-      },
-    }
+  return {
+    dbHelpers
   };
 }
 
