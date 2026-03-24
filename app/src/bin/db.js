@@ -109,7 +109,7 @@ function createDatabaseManager(dbPath) {
 
       getAllPlayerMatchupNotes: (playerId) => {
         const sql = `
-        SELECT m.*, p.name, AS opponent_name
+        SELECT m.*, p.name AS opponent_name
         FROM matchup_notes m
         JOIN players p ON m.opponent_id = p.id
         WHERE m.player_id = ?
