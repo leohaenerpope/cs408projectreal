@@ -6,6 +6,24 @@ const createTodosTableSQL = `
     task TEXT NOT NULL,
     completed INTEGER DEFAULT 0
   )`;
+const createPlayersTableSQL = `
+  CREATE TABLE IF NOT EXISTS todos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`;
+const createMatchupNotesTableSQL = `
+  CREATE TABLE IF NOT EXISTS matchup_notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id INTEGER NOT NULL,
+    opponent_id INTEGER NOT NULL,
+    notes TEXT,
+    matchup_date TEXT,
+    points INTEGER DEFAULT 0,
+    assists INTEGER DEFAULT 0,
+    rebounds INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`;
 
   // USER CANNOT ADD PLAYER NAMED EVERYONE
 
@@ -15,6 +33,8 @@ function createDatabaseManager(dbPath) {
   console.log('Database manager created for:', dbPath);
   database.pragma('foreign_keys = ON');
   database.exec(createTodosTableSQL);
+  database.exec(createPlayersTableSQL);
+  database.exec(createMatchupNotesTableSQL);
 
   function ensureConnected() {
     if (!database.open) {
@@ -51,6 +71,16 @@ function createDatabaseManager(dbPath) {
           console.warn('seedTestData called outside of test environment. FIXME!');
 
         }
+      },
+
+
+      getAllPlayers: () => {
+        return database.prepare('SELECT * FROM players ORDER BY id DESC').all();
+      },
+
+      createPlayer: (name) => {
+        const info = database.prepare('INSERT INTO players (name) VALUES (?)').run(task);
+        return info.lastInsertRowid; // todo
       },
 
       getAllTodos: () => {
