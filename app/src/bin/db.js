@@ -3,7 +3,7 @@ const Database = require('better-sqlite3');
 const createPlayersTableSQL = `
   CREATE TABLE IF NOT EXISTS players (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    name TEXT NOT NULL UNIQUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`;
 
@@ -40,7 +40,6 @@ function createDatabaseManager(dbPath) {
       clearDatabase: () => {
         if (process.env.NODE_ENV === 'test') {
           ensureConnected();
-          database.prepare('DELETE FROM todos').run();
           database.prepare('DELETE FROM players').run();
           database.prepare('DELETE FROM matchup_notes').run();
         } else {
@@ -48,30 +47,9 @@ function createDatabaseManager(dbPath) {
         }
       },
 
-      seedTestData: () => {
-        if (process.env.NODE_ENV === 'test') {
-          ensureConnected();
-          const insert = database.prepare('INSERT INTO todos (task, completed) VALUES (?, ?)');
-          const testData = [
-            { task: 'Test task 1', completed: 0 },
-            { task: 'Test task 2', completed: 1 },
-            { task: 'Test task 3', completed: 0 },
-          ];
-          const insertMany = database.transaction((todos) => {
-            for (const todo of todos) insert.run(todo.task, todo.completed);
-          });
-          insertMany(testData);
-          console.log('Seeding test data into database');
-        } else {
-          console.warn('seedTestData called outside of test environment. FIXME!');
-
-        }
-      },
-
       // Simple sample seed function, will not be used in the feature, just for checkpoint 2
       // to ensure the database works. 
       seedDatabaseSample: () => {
-        database.prepare('DELETE FROM todos').run();
         database.prepare('DELETE FROM players').run();
         database.prepare('DELETE FROM matchup_notes').run();
 
