@@ -23,25 +23,19 @@ router.post('/delete/:id', (req, res) => {
 router.post('/add', (req, res) => {
 	// get the raw name from the form (
 	const rawName = req.body.playerName;
+
+	try {
+		req.db.createPlayer(rawName);
+		res.redirect('/players');
+	} catch (err) {
+		console.error(err.message);
+		if (err.message.includes('UNIQUE')) {
+			return res.render('add-player', { title: 'NBA Player Matchup Notes - Add New Player', error: 'Player already exists'});
+		}
+		res.render('add-player', { title: 'NBA Player Matchup Notes - Add New Player', error: 'Failed to add player'});
+	}
   
-	// format the name
-	const playerSlug = rawName
-	  .toLowerCase()
-	  .trim()
-	  .replace(/\s+/g, '-');
-  
-	console.log(`Original: ${rawName} | Slug: ${playerSlug}`);
-  
-	// 3. Save both to your data store
-	const newPlayer = {
-	  displayName: rawName,
-	  slug: playerSlug 
-	};
-  
-	// ADD TO DATABASE HERE TODO;
-	// PRobably shouldn't add to database if the playerSlug already exists
-  
-	res.redirect('/players');
+	
 });
 
 module.exports = router;

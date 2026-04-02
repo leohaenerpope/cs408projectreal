@@ -5,6 +5,11 @@
           <div class="card-header bg-primary text-center">
             <h3 class="mb-0">Add New Player</h3>
           </div>
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger">
+              <%= error %>
+            </div>
+          <% } %>
           <div class="card-body p-4">
             <form action="/players/add" method="POST">
               <div class="mb-3">
