@@ -11,6 +11,13 @@ router.get('/', function(req, res, next) {
 router.get('/add', (req, res) => {
 	res.render('add-player', { title: 'NBA Player Matchup Notes - Add New Player' });
 });
+
+// deletes the player (selected by id) from the database
+router.post('/delete/:id', (req, res) => {
+	const id = req.params.id;
+	req.db.deletePlayer(id);
+	res.redirect('/players');
+});
   
 // POST for add player page
 router.post('/add', (req, res) => {

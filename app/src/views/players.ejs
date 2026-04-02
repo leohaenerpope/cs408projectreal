@@ -25,9 +25,11 @@
                     <a href="/matchups/<%= player.id %>" class="btn btn-sm btn-outline-info">
                       Matchup Notes
                     </a>
-                    <a href="/players/delete/<%= player.id %>" class="btn btn-sm btn-outline-danger">
-                      Delete
-                    </a>
+                    <form action="/players/delete/<%= player.id %>" method="POST" style="display:inline;">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Delete
+                      </button>
+                    </form>
                   </td>
                 </tr>
               <% }) %>
