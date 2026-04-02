@@ -3,7 +3,8 @@ var router = express.Router();
 
 // GET player list page
 router.get('/', function(req, res, next) {
-	res.render('players', { title: 'NBA Player Matchup Notes - Player List' });
+	const players = req.db.getAllPlayers();
+	res.render('players', { title: 'NBA Player Matchup Notes - Player List', players: players});
 });
 
 // GET add player page

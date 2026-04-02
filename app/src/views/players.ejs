@@ -11,12 +11,29 @@
               <th>Options</th>
             </tr>
           </thead>
+
           <tbody>
-            <tr>
-              <td>LeBron James</td>
-              <td><a href="/matchups/lebron-james" class="btn btn-sm btn-outline-info">Matchup Notes</a><a href="#" class="btn btn-sm btn-outline-info">Delete</a></td>
-            </tr>
+            <% if (players.length === 0) { %>
+              <tr>
+                <td colspan="2" class="text-center">No players found</td>
+              </tr>
+            <% } else { %>
+              <% players.forEach(player => { %>
+                <tr>
+                  <td><%= player.name %></td>
+                  <td>
+                    <a href="/matchups/<%= player.id %>" class="btn btn-sm btn-outline-info">
+                      Matchup Notes
+                    </a>
+                    <a href="/players/delete/<%= player.id %>" class="btn btn-sm btn-outline-danger">
+                      Delete
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } %>
           </tbody>
+
         </table>
       </div>
     </div>

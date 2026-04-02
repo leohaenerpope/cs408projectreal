@@ -71,7 +71,9 @@ function createDatabaseManager(dbPath) {
       // Simple sample seed function, will not be used in the feature, just for checkpoint 2
       // to ensure the database works. 
       seedDatabaseSample: () => {
-        ensureConnected();
+        database.prepare('DELETE FROM todos').run();
+        database.prepare('DELETE FROM players').run();
+        database.prepare('DELETE FROM matchup_notes').run();
 
         const lebron = dbHelpers.createPlayer('LeBron James');
         const curry = dbHelpers.createPlayer('Stephen Curry');
