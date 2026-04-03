@@ -20,8 +20,6 @@ const createMatchupNotesTableSQL = `
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`;
 
-  // USER CANNOT ADD PLAYER NAMED EVERYONE
-
 
 function createDatabaseManager(dbPath) {
   const database = new Database(dbPath);
@@ -36,7 +34,7 @@ function createDatabaseManager(dbPath) {
     }
   }
   const dbHelpers = {
-
+      // clears both players and matchup_notes databases, only used when node process mode is test
       clearDatabase: () => {
         if (process.env.NODE_ENV === 'test') {
           ensureConnected();
@@ -68,28 +66,6 @@ function createDatabaseManager(dbPath) {
         } else {
           console.warn('testSeedDatabase called outside of test environment. FIXME!');
         }
-      },
-
-      // Simple sample seed function, will not be used in the feature, just for checkpoint 2
-      // to ensure the database works. 
-      seedDatabaseSample: () => {
-        database.prepare('DELETE FROM players').run();
-        database.prepare('DELETE FROM matchup_notes').run();
-
-        const lebron = dbHelpers.createPlayer('LeBron James');
-        const curry = dbHelpers.createPlayer('Stephen Curry');
-
-        dbHelpers.createMatchupNote({
-          playerId: lebron.id,
-          opponentId: curry.id,
-          notes: 'Tough defensive matchup',
-          matchup_date: '2024-01-01',
-          points: 28,
-          assists: 8,
-          rebounds: 7
-        });
-
-        console.log('Database fully seeded using helpers');
       },
 
       // Players -----------------------
@@ -179,7 +155,6 @@ function createDatabaseManager(dbPath) {
 
   // TODO: THIS WILL BE CHANGED FOR CHECKPOINT 3 TO ADD FULL USER ABILITY TO ADD/REMOVE
   // THINGS FROM A DATABASE THAT THEY WILL MAKE THEMSELVES, NOT JUST A SAMPLE DATABASE
-  dbHelpers.seedDatabaseSample();
 
   return {
     dbHelpers
