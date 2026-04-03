@@ -47,6 +47,29 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      // FOR TESTING PURPOSES. This seeds database with sample data.
+      testSeedDatabase: () => {
+        if (process.env.NODE_ENV === 'test') {
+          ensureConnected();
+          const lebron = dbHelpers.createPlayer('LeBron James');
+          const curry = dbHelpers.createPlayer('Stephen Curry');
+
+          dbHelpers.createMatchupNote({
+            playerId: lebron.id,
+            opponentId: curry.id,
+            notes: 'Tough defensive matchup',
+            matchup_date: '2024-01-01',
+            points: 28,
+            assists: 8,
+            rebounds: 7
+          });
+
+          console.log('Database fully seeded using helpers');
+        } else {
+          console.warn('testSeedDatabase called outside of test environment. FIXME!');
+        }
+      },
+
       // Simple sample seed function, will not be used in the feature, just for checkpoint 2
       // to ensure the database works. 
       seedDatabaseSample: () => {
